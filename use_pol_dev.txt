@@ -1,0 +1,437 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "1e201da1-aeb4-40e2-93d8-3b40e6133105",
+   "metadata": {},
+   "source": [
+    "<br>\n",
+    "<h3><center>Wallace Python Problem Set</center></h3>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9776f320-ab91-480a-87b3-e00d4e1c2511",
+   "metadata": {},
+   "source": [
+    "<center><i>Rashid Mamadolimov<br> 5 January 2022</i></center>\n",
+    "<br>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "aabf3f80-ec3b-454b-af65-1b338e08a035",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import json"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "5efec5d0-db15-49c6-ab9b-61915f1aab63",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Read JSON files\n",
+    "\n",
+    "with open('users.json') as f:\n",
+    "  users_dict = json.load(f)\n",
+    "with open('policies.json') as f:\n",
+    "  policies_dict = json.load(f)\n",
+    "with open('devices.json') as f:\n",
+    "  devices_dict = json.load(f)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "54cb878b-3114-4692-b6fa-ff23dae33f82",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "users: ['John', 'Doe', 'Susan']\n",
+      "policies: ['KettlePolicy', 'GaragePolicy', 'BlindsPolicy', 'MasterBedroomPolicy', 'DoorsPolicy']\n",
+      "devices: ['kettle_0', 'kettle_1', 'garageBlinds', 'bedroomBlinds', 'kitchenBlinds', 'bathroomDoor', 'garageDoor', 'bedroomDoor']\n",
+      "device types: ['door', 'blinds', 'kettle']\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Create some lists from dictionaries\n",
+    "\n",
+    "users_list = []\n",
+    "policies_list = [] \n",
+    "devices_list = []\n",
+    "dev_types_list = []\n",
+    "\n",
+    "for elem in users_dict['users']:\n",
+    "    users_list.append(elem['name'])\n",
+    "for elem in policies_dict['policies']:\n",
+    "    policies_list.append(elem['id'])\n",
+    "for elem in devices_dict['devices']:\n",
+    "    devices_list.append(elem['id'])\n",
+    "for elem in devices_dict['devices']:\n",
+    "    dev_types_list.append(elem['type'])\n",
+    "dev_types_list = list(set(dev_types_list)) #removing duplicate elements\n",
+    "\n",
+    "print()\n",
+    "print('users:', users_list)\n",
+    "print('policies:', policies_list)\n",
+    "print('devices:', devices_list)\n",
+    "print('device types:', dev_types_list)\n",
+    "print()"
+   ]
+  },
+  {
+   "cell_type": "raw",
+   "id": "a2e62d31-1ea5-4993-95eb-d37241b2087d",
+   "metadata": {},
+   "source": [
+    "1. Answer whether user X has access to the device Y."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "5f848e25-d2c9-442f-bf84-aea4573f46d2",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "Enter user name:\n"
+     ]
+    },
+    {
+     "name": "stdin",
+     "output_type": "stream",
+     "text": [
+      " John\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "Enter device id:\n"
+     ]
+    },
+    {
+     "name": "stdin",
+     "output_type": "stream",
+     "text": [
+      " kettle_1\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "# User input\n",
+    "\n",
+    "print()\n",
+    "while True:\n",
+    "    print('Enter user name:')\n",
+    "    X = input()\n",
+    "    if X not in users_list:\n",
+    "        X = None\n",
+    "        print()\n",
+    "        print('Sorry, this name is not in our list. Try again:')\n",
+    "        continue\n",
+    "    break\n",
+    "print()\n",
+    "while True:\n",
+    "    print('Enter device id:')\n",
+    "    Y = input()\n",
+    "    if Y not in devices_list:\n",
+    "        Y = None\n",
+    "        print()\n",
+    "        print('Sorry, this device is not in our list. Try again:')\n",
+    "        continue\n",
+    "    break\n",
+    "print()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "c4d91a2a-7b31-45d0-87dd-1dd9045df198",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "Answer: John has access to the device kettle_1 - True\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "def access(X,Y):\n",
+    "    for pair in users_dict[\"users\"]:\n",
+    "        if pair[\"name\"] == X:\n",
+    "            policies_X = pair.get(\"policies\")\n",
+    "        \n",
+    "    res = False\n",
+    "    for policy_X in policies_X:\n",
+    "        for pair in policies_dict[\"policies\"]:\n",
+    "            if pair[\"id\"] == policy_X:\n",
+    "                for device in pair[\"devices\"]:\n",
+    "                    if device == Y:\n",
+    "                        res = True\n",
+    "    return(res)\n",
+    "\n",
+    "ans1 = access(X,Y)\n",
+    "\n",
+    "print()\n",
+    "print('Answer:', X, 'has access to the device', Y, '-', ans1)  \n",
+    "print()"
+   ]
+  },
+  {
+   "cell_type": "raw",
+   "id": "a98bd2f8-7ff1-4b23-8784-cdd9f088023f",
+   "metadata": {},
+   "source": [
+    "2. List all users who have access to the device Y."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "8bdf25aa-eca8-4a5f-b1f8-fbc13204bbbd",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "Answer: List of all users who have access to the device kettle_1: ['John', 'Susan']\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "# For each user we apply access function, if it is True, we add the user to our list\n",
+    "\n",
+    "users_access_Y= []\n",
+    "for user in users_list:\n",
+    "    if access(user, Y):\n",
+    "        users_access_Y.append(user)    \n",
+    "ans2 = users_access_Y\n",
+    "print()\n",
+    "print('Answer: List of all users who have access to the device', Y + ':', ans2)\n",
+    "print()"
+   ]
+  },
+  {
+   "cell_type": "raw",
+   "id": "291e092a-b46d-4e89-82c4-c8672e15109e",
+   "metadata": {},
+   "source": [
+    "3. List all devices that user X can access."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "4aac801a-41e8-486e-860f-0cd803d29424",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "Answer: List of all devices that user John can access: ['kettle_0', 'kettle_1', 'garageBlinds', 'bedroomBlinds', 'bedroomDoor']\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "# For each device we apply access function, if it is True, we add the user to our list\n",
+    "\n",
+    "devices_access_X= []\n",
+    "for device in devices_list:\n",
+    "    if access(X, device):\n",
+    "        devices_access_X.append(device) \n",
+    "ans3 = devices_access_X\n",
+    "print()\n",
+    "print('Answer: List of all devices that user', X, 'can access:', ans3)\n",
+    "print()"
+   ]
+  },
+  {
+   "cell_type": "raw",
+   "id": "4bfe165e-e12f-4afa-bc43-3f11c74fd208",
+   "metadata": {},
+   "source": [
+    "4. *(Optional)* List all device types the user X has access to."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "18c44fe0-ea89-41cd-b8d9-01f03bb9672c",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "Answer: List of all device types that user John has access to: ['door', 'blinds', 'kettle']\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "# In the problem No3, we have already found device ids. Using devices dictionary we find the corresponding device types. \n",
+    "\n",
+    "dev_types_access_X = []\n",
+    "for pair in devices_dict[\"devices\"]:\n",
+    "    if pair['id'] in devices_access_X:\n",
+    "        dev_types_access_X.append(pair['type'])\n",
+    "ans4 = list(set(dev_types_access_X))\n",
+    "print()\n",
+    "print('Answer: List of all device types that user', X, 'has access to:', ans4)\n",
+    "print()"
+   ]
+  },
+  {
+   "cell_type": "raw",
+   "id": "8bab6e16-9fc1-4a48-adb0-dc7f8d91a964",
+   "metadata": {},
+   "source": [
+    "5. *(Optional)* For the device type Z, list all users who have access to at least one device of this type."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "275e1a2c-d61e-451b-8f44-9c040b22a0ed",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "Enter device type:\n"
+     ]
+    },
+    {
+     "name": "stdin",
+     "output_type": "stream",
+     "text": [
+      " door\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "print()\n",
+    "while True:\n",
+    "    print('Enter device type:')\n",
+    "    Z = input()\n",
+    "    if Z not in dev_types_list:\n",
+    "        Y = None\n",
+    "        print()\n",
+    "        print('Sorry, this device type is not in our list. Try again:')\n",
+    "        continue\n",
+    "    break\n",
+    "print()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "8ae4bd73-06a8-408d-bb25-931beeb88088",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "Answer: List of all users who have access to at least one device of type door: ['Susan', 'John', 'Doe']\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "# This time the access function will be applied for each user and for each device with type Z.\n",
+    "\n",
+    "devices_Z = []\n",
+    "for pair in devices_dict[\"devices\"]:\n",
+    "    if pair['type'] == Z:\n",
+    "        devices_Z.append(pair['id'])\n",
+    "\n",
+    "users_access_Ztype = []\n",
+    "for device_Z in devices_Z:\n",
+    "    for user in users_list:\n",
+    "        if access(user, device_Z):\n",
+    "            users_access_Ztype.append(user)\n",
+    "\n",
+    "ans5 = list(set(users_access_Ztype))\n",
+    "print()\n",
+    "print('Answer: List of all users who have access to at least one device of type', Z + ':', ans5)\n",
+    "print() "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8e81de14-b8d4-4d60-99ef-a04f8eba13a9",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.8"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
